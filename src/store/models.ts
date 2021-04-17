@@ -9,6 +9,8 @@ export interface Task {
 export interface StoreModel {
   tasks: Task[];
   add: Action<StoreModel, Task>;
+  newTask: Action<StoreModel>;
+  newIfNeeded: Action<StoreModel>;
   update: Action<StoreModel, Task>;
   remove: Action<StoreModel, Task>;
   set: Action<StoreModel, Task[]>;

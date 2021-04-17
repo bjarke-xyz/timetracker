@@ -1,26 +1,13 @@
-import styled from "@emotion/styled";
+/** @jsxRuntime classic */
+/** @jsx jsx */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { css, jsx } from "@emotion/react";
 import React from "react";
-import { v4 as uuid } from "uuid";
 import { useStoreActions, useStoreState } from "../store/hooks";
-
-const LabelDurationWrapper = styled.div`
-  display: flex;
-  flex-direction: row;
-  margin-bottom: 0.5rem;
-  width: 100%;
-`;
-
-const InputWrapper = styled.input`
-  width: 100%;
-`;
 
 export const Input: React.FC = () => {
   const tasks = useStoreState((state) => state.tasks);
   const actions = useStoreActions((actions) => actions);
-
-  const addTask = () => {
-    actions.add({ id: uuid(), label: "", durations: [] });
-  };
 
   const onLabelChange = (
     index: number,
@@ -29,6 +16,7 @@ export const Input: React.FC = () => {
     const task = tasks[index];
     task.label = event.target.value;
     actions.update(task);
+    actions.newIfNeeded();
   };
 
   const onDurationChange = (
@@ -40,31 +28,79 @@ export const Input: React.FC = () => {
     const durations = durationsStr.split(",");
     task.durations = durations;
     actions.update(task);
-    console.log(task);
+    actions.newIfNeeded();
   };
 
   return (
-    <>
-      <button onClick={addTask}>Tilføj</button>
-      <button onClick={() => actions.set([])}>Ryd</button>
-      <div>
-        {tasks.map((task, i) => (
-          <div key={task.id}>
-            <LabelDurationWrapper>
-              <InputWrapper
-                placeholder="Label"
-                value={task.label}
-                onChange={(e) => onLabelChange(i, e)}
-              ></InputWrapper>
-              <InputWrapper
-                placeholder="8:00 9:00, 9:00 9:15"
-                value={task.durations.join(",")}
-                onChange={(e) => onDurationChange(i, e)}
-              ></InputWrapper>
-            </LabelDurationWrapper>
-          </div>
-        ))}
-      </div>
-    </>
+    <div
+      css={css`
+        margin-top: 0.2rem;
+        display: flex;
+        flex-direction: column;
+      `}
+    >
+      <h3>Timetracker</h3>
+      {tasks.map((task, i) => (
+        <div
+          key={task.id}
+          css={css`
+            padding: 0.6rem !important;
+          `}
+          className="row"
+        >
+          <button
+            css={css`
+              padding: 0 0.5rem !important;
+            `}
+            className="column column-5 button button-clear"
+            title="Slet"
+            onClick={() => actions.remove(task)}
+          >
+            🗑️
+          </button>
+          <input
+            css={css`
+              margin: 0 0.25rem !important;
+            `}
+            className="column column-15"
+            placeholder="Opgave"
+            value={task.label}
+            onChange={(e) => onLabelChange(i, e)}
+          ></input>
+          <input
+            className="column column-80"
+            placeholder="8:00 9:00, 9:00 9:15"
+            value={task.durations.join(",")}
+            onChange={(e) => onDurationChange(i, e)}
+          ></input>
+        </div>
+      ))}
+      {tasks.length === 0 ? (
+        <button
+          css={css`
+            margin-right: -0.85rem;
+          `}
+          className="button button-outline"
+          onClick={() => actions.newTask()}
+        >
+          Tilføj
+        </button>
+      ) : null}
+      {tasks.length > 0 ? (
+        <button
+          css={css`
+            margin-right: -0.85rem;
+          `}
+          className="button button-outline"
+          onClick={() => {
+            if (confirm("Er du sikker?")) {
+              actions.set([]);
+            }
+          }}
+        >
+          Slet alle
+        </button>
+      ) : null}
+    </div>
   );
 };

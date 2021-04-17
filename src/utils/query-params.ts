@@ -6,7 +6,6 @@ export function parseQueryParams(): { q: Task[] | null } {
   const result: { q: Task[] | null } = { q: null };
   const params = new URLSearchParams(window.location.search);
   window.history.replaceState(null, "", window.location.pathname);
-  console.log(params.get("q"));
 
   const qStr = params.get("q");
   if (qStr) {
