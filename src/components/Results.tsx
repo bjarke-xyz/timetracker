@@ -1,3 +1,7 @@
+/** @jsxRuntime classic */
+/** @jsx jsx */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { css, jsx } from "@emotion/react";
 import React, { useEffect, useState } from "react";
 import { useStoreState } from "../store/hooks";
 
@@ -128,36 +132,38 @@ export const Results: React.FC = () => {
   }, [tasks]);
 
   return (
-    <>
-      <div>
-        <table>
-          <thead>
-            <tr>
-              <th>Opgave</th>
-              <th>Timer</th>
-              <th>HH:MM:SS</th>
+    <div>
+      <table
+        css={css`
+          display: table;
+        `}
+      >
+        <thead>
+          <tr>
+            <th>Opgave</th>
+            <th>Timer</th>
+            <th>HH:MM:SS</th>
+          </tr>
+        </thead>
+        <tbody>
+          {processedTasks.map((task, i) => (
+            <tr key={i}>
+              <td>{task.label}</td>
+              <td>{task.durationHours}</td>
+              <td>{task.durationHHMMSS}</td>
             </tr>
-          </thead>
-          <tbody>
-            {processedTasks.map((task, i) => (
-              <tr key={i}>
-                <td>{task.label}</td>
-                <td>{task.durationHours}</td>
-                <td>{task.durationHHMMSS}</td>
-              </tr>
-            ))}
-            <tr>
-              <td>I alt</td>
-              <td>
-                {convertToHours(sum(processedTasks.map((x) => x.durationMs)))}
-              </td>
-              <td>
-                {convertToString(sum(processedTasks.map((x) => x.durationMs)))}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </>
+          ))}
+          <tr>
+            <td>I alt</td>
+            <td>
+              {convertToHours(sum(processedTasks.map((x) => x.durationMs)))}
+            </td>
+            <td>
+              {convertToString(sum(processedTasks.map((x) => x.durationMs)))}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   );
 };

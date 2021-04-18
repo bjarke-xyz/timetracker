@@ -45,6 +45,7 @@ export const Input: React.FC = () => {
           key={task.id}
           css={css`
             padding: 0.6rem !important;
+            flex-direction: row !important;
           `}
           className="row"
         >
