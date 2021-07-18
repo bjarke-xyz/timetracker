@@ -2,6 +2,7 @@ version: "3.7"
 
 services:
   timetracker:
+    image: registry.bjarke.xyz/timetracker:latest
     build:
       context: .
     ports:
