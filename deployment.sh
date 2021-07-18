@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
-docker-compose build && docker-compose down --remove-orphans && docker-compose up -d
+docker-compose build && docker-compose pus
+docker stack deploy --compose=docker-compose.yml --with-registry-auth timetracker

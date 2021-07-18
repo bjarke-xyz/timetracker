@@ -5,5 +5,10 @@ services:
     image: registry.bjarke.xyz/timetracker:latest
     build:
       context: .
-    ports:
-      - "8085:80"
+    networks:
+      - swarm-overlay
+
+networks:
+  swarm-overlay:
+    external: true
+    name: swarm-overlay
