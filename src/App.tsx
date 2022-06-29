@@ -1,5 +1,6 @@
 import { useStoreRehydrated } from "easy-peasy";
 import { useEffect } from "react";
+import { Hotkeys } from "./components/Hotkeys";
 import { Input } from "./components/Input";
 import { Results } from "./components/Results";
 import { useStoreActions, useStoreState } from "./store/hooks";
@@ -36,6 +37,10 @@ const App: React.FC = () => {
               <div className="column">
                 <Results />
               </div>
+            </div>
+
+            <div>
+              <Hotkeys />
             </div>
           </div>
         ) : (

@@ -2,12 +2,46 @@
 /** @jsx jsx */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { css, jsx } from "@emotion/react";
-import React from "react";
+import { format } from "date-fns";
+import { isNil } from "lodash";
+import React, { useRef } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 import { useStoreActions, useStoreState } from "../store/hooks";
 
 export const Input: React.FC = () => {
   const tasks = useStoreState((state) => state.tasks);
   const actions = useStoreActions((actions) => actions);
+
+  const durationInputs = useRef<(HTMLInputElement | null)[]>(
+    Array.from(Array(tasks.length).map(() => null))
+  );
+
+  const onInsertNowPressed = () => {
+    const activeInputIndex = durationInputs.current.findIndex(
+      (x) => x === document.activeElement
+    );
+    const activeInput = durationInputs.current[activeInputIndex];
+    if (!activeInput) {
+      return;
+    }
+    const start = activeInput.selectionStart;
+    if (isNil(start)) {
+      return;
+    }
+    const value = activeInput.value ?? "";
+    const now = new Date();
+    const formattedNow = format(
+      now,
+      `${value.trim().length === 0 ? "" : " "}HH:mm`
+    );
+    const newValue = `${value.slice(0, start)}${formattedNow}${value.slice(
+      start
+    )}`;
+    onDurationChange(activeInputIndex, newValue);
+  };
+  useHotkeys("ctrl+enter", onInsertNowPressed, {
+    enableOnTags: ["INPUT"],
+  });
 
   const onLabelChange = (
     index: number,
@@ -19,12 +53,9 @@ export const Input: React.FC = () => {
     actions.newIfNeeded();
   };
 
-  const onDurationChange = (
-    index: number,
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const onDurationChange = (index: number, value: string) => {
     const task = tasks[index];
-    const durationsStr = event.target.value;
+    const durationsStr = value;
     const durations = durationsStr.split(",");
     task.durations = durations;
     actions.update(task);
@@ -69,10 +100,11 @@ export const Input: React.FC = () => {
             onChange={(e) => onLabelChange(i, e)}
           ></input>
           <input
+            ref={(el) => (durationInputs.current[i] = el)}
             className="column column-80"
             placeholder="8:00 9:00, 9:00 9:15"
             value={task.durations.join(",")}
-            onChange={(e) => onDurationChange(i, e)}
+            onChange={(e) => onDurationChange(i, e.target.value)}
           ></input>
         </div>
       ))}
