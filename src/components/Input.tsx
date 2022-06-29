@@ -30,10 +30,14 @@ export const Input: React.FC = () => {
     }
     const value = activeInput.value ?? "";
     const now = new Date();
-    const formattedNow = format(
-      now,
-      `${value.trim().length === 0 ? "" : " "}HH:mm`
-    );
+    let includeSpace = false;
+    if (value.trim().length === 0) {
+      includeSpace = true;
+    }
+    if (value[start] === " ") {
+      includeSpace = false;
+    }
+    const formattedNow = format(now, `${!includeSpace ? "" : " "}HH:mm`);
     const newValue = `${value.slice(0, start)}${formattedNow}${value.slice(
       start
     )}`;
